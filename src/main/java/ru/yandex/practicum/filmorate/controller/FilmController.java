@@ -19,7 +19,7 @@ public class FilmController {
     private static final HashMap<Integer, Film> filmList = new HashMap<>();
 
     @PostMapping("/films")
-    public void addFilm(@Valid @RequestBody Film film) {
+    public Film addFilm(@Valid @RequestBody Film film) {
         if (validateFilm(film)) {
             if (film.getId() == 0) {
                 film.setId(++id);
@@ -27,13 +27,15 @@ public class FilmController {
             log.info("Идет процесс добавление нового фильма: {}", film.getName());
             filmList.put(film.getId(), film);
         }
+        return film;
     }
 
     @PutMapping("/films")
-    public void updateFilm(@Valid @RequestBody Film film) {
+    public Film updateFilm(@Valid @RequestBody Film film) {
         if (filmList.containsKey(film.getId())) {
             log.info("Обновление фильма: {}", film.getName());
             filmList.put(film.getId(), film);
+            return film;
         } else {
             throw new ValidationException("Фильм не найдем");
         }

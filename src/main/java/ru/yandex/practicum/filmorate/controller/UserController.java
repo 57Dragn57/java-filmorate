@@ -20,7 +20,7 @@ public class UserController {
     private static final HashMap<Integer, User> userList = new HashMap<>();
 
     @PostMapping("/users")
-    public void addUser(@Valid @RequestBody User user) {
+    public User addUser(@Valid @RequestBody User user) {
         if (validateUser(user)) {
             if (user.getName() == null || user.getName().isBlank()) {
                 user.setName(user.getLogin());
@@ -31,13 +31,15 @@ public class UserController {
             log.info("Добавление нового пользователя: {}", user.getName());
             userList.put(user.getId(), user);
         }
+        return user;
     }
 
     @PutMapping("/users")
-    public void updateUser(@Valid @RequestBody User user) {
+    public User updateUser(@Valid @RequestBody User user) {
         if (userList.containsKey(user.getId())) {
             log.info("Обновление пользователя: {}", user.getLogin());
             userList.put(user.getId(), user);
+            return user;
         } else {
             throw new ValidationException("Такого пользователя не существует");
         }
