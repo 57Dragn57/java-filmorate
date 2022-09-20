@@ -21,7 +21,7 @@ public class UserController {
 
     @PostMapping("/users")
     public User addUser(@Valid @RequestBody User user) {
-        if (validateUser(user)) {
+        if (FilmAndUserValidator.validateUser(user)) {
             if (user.getName() == null || user.getName().isBlank()) {
                 user.setName(user.getLogin());
             }
@@ -30,6 +30,8 @@ public class UserController {
             }
             log.info("Добавление нового пользователя: {}", user.getName());
             userList.put(user.getId(), user);
+        }else{
+            throw new ValidationException("Пользователь не прошел валидацию");
         }
         return user;
     }
@@ -51,20 +53,7 @@ public class UserController {
         List<User> users = new ArrayList<>(userList.values());
         return users;
     }
-
-    private boolean validateUser(User user) {
-        if (user.getEmail().contains("@") && !user.getEmail().isBlank()) {
-            if (!user.getLogin().isBlank() && !user.getLogin().contains(" ")) {
-                if (!user.getBirthday().isAfter(LocalDate.now())) {
-                    return true;
-                } else {
-                    throw new ValidationException("Дата рождения не прошла валидацию!");
-                }
-            } else {
-                throw new ValidationException("Логин не прошел валидацию!");
-            }
-        } else {
-            throw new ValidationException("Адрес эл.почты не прошел валидацию!");
-        }
+    public HashMap<Integer, User> getUserList(){
+        return userList;
     }
 }

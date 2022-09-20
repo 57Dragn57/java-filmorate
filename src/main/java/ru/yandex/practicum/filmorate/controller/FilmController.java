@@ -20,12 +20,14 @@ public class FilmController {
 
     @PostMapping("/films")
     public Film addFilm(@Valid @RequestBody Film film) {
-        if (validateFilm(film)) {
+        if (FilmAndUserValidator.validateFilm(film)) {
             if (film.getId() == 0) {
                 film.setId(++id);
             }
             log.info("Идет процесс добавление нового фильма: {}", film.getName());
             filmList.put(film.getId(), film);
+        }else{
+            throw new ValidationException("Фильм не прошел валидацию");
         }
         return film;
     }
@@ -46,25 +48,5 @@ public class FilmController {
         log.info("Идет процесс получения списка фильмов");
         List<Film> films = new ArrayList<>(filmList.values());
         return films;
-    }
-
-    private boolean validateFilm(Film film) {
-        if (!film.getName().isBlank()) {
-            if (film.getDescription().length() < 201) {
-                if (film.getReleaseDate().isAfter(LocalDate.of(1895, 12, 28))) {
-                    if (film.getDuration() > 0) {
-                        return true;
-                    } else {
-                        throw new ValidationException("Не правильно указана продолжительность!");
-                    }
-                } else {
-                    throw new ValidationException("Фильм слишком старый!");
-                }
-            } else {
-                throw new ValidationException("Длинное описание!");
-            }
-        } else {
-            throw new ValidationException("Неверное наименование!");
-        }
     }
 }
