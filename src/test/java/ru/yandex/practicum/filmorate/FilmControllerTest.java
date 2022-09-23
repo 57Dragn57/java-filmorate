@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import ru.yandex.practicum.filmorate.controller.FilmAndUserValidator;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 
