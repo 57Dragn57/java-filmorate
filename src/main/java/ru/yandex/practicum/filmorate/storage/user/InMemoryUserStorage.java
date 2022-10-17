@@ -1,8 +1,13 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.yandex.practicum.filmorate.controller.FilmAndUserValidator;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.validation.NotFoundException;
 import ru.yandex.practicum.filmorate.validation.ValidationException;
 
 import java.util.ArrayList;
@@ -13,6 +18,12 @@ import java.util.List;
 public class InMemoryUserStorage implements UserStorage {
     private int id;
     private static final HashMap<Integer, User> userList = new HashMap<>();
+    private final UserService userService;
+
+    @Autowired
+    public InMemoryUserStorage(UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public User addUser(User user) {
@@ -31,12 +42,21 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
+    public User getUser(int id){
+        if(userList.containsKey(id)) {
+            return userList.get(id);
+        }else{
+            throw new NotFoundException("Такого пользователя не существует");
+        }
+    }
+
+    @Override
     public User updateUser(User user) {
         if (userList.containsKey(user.getId())) {
             userList.put(user.getId(), user);
             return user;
         } else {
-            throw new ValidationException("Такого пользователя не существует");
+            throw new NotFoundException("Такого пользователя не существует");
         }
     }
 
@@ -47,7 +67,44 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void deleteUser(int id){
+    public void deleteUser(int id) {
         userList.remove(id);
+    }
+
+    @Override
+    public void addFriend(int firstUser, int secondUser) {
+        if(userList.containsKey(firstUser) && userList.containsKey(secondUser)) {
+            userService.addFriend(userList.get(firstUser), userList.get(secondUser));
+        }else{
+            throw new NotFoundException("Такого пользователя не существует");
+        }
+    }
+
+    @Override
+    public void removeFriend(int firstUser, int secondUser) {
+        if(userList.containsKey(firstUser) && userList.containsKey(secondUser)) {
+            userService.removeFriend(userList.get(firstUser), userList.get(secondUser));
+        }else{
+            throw new NotFoundException("Такого пользователя не существует");
+        }
+
+    }
+
+    @Override
+    public List<User> commonFriends(int firstUser, int secondUser) {
+        List<User> friends = new ArrayList<>();
+        for (Integer id : userService.commonFriends(userList.get(firstUser), userList.get(secondUser))) {
+            friends.add(userList.get(id));
+        }
+        return friends;
+    }
+
+    @Override
+    public List<User> getFriends(int id) {
+        List<User> friends = new ArrayList<>();
+        for (Integer num : userList.get(id).getFriendList()) {
+            friends.add(userList.get(num));
+        }
+        return friends;
     }
 }

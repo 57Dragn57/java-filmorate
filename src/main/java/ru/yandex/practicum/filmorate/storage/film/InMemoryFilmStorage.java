@@ -1,8 +1,11 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.FilmAndUserValidator;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.validation.NotFoundException;
 import ru.yandex.practicum.filmorate.validation.ValidationException;
 
 import java.util.ArrayList;
@@ -13,6 +16,12 @@ import java.util.List;
 public class InMemoryFilmStorage implements FilmStorage {
     private int id;
     private static final HashMap<Integer, Film> filmList = new HashMap<>();
+    private final FilmService filmService;
+
+    @Autowired
+    public InMemoryFilmStorage(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @Override
     public Film addFilm(Film film) {
@@ -28,12 +37,21 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public Film getFilm(int id) {
+        if (filmList.containsKey(id)) {
+            return filmList.get(id);
+        } else {
+            throw new NotFoundException("Фильм не найдем");
+        }
+    }
+
+    @Override
     public Film updateFilm(Film film) {
         if (filmList.containsKey(film.getId())) {
             filmList.put(film.getId(), film);
             return film;
         } else {
-            throw new ValidationException("Фильм не найдем");
+            throw new NotFoundException("Фильм не найдем");
         }
     }
 
@@ -45,6 +63,35 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void deleteFilm(int id) {
-        filmList.remove(id);
+        if (filmList.containsKey(id)) {
+            filmList.remove(id);
+        } else {
+            throw new NotFoundException("Фильм не найдем");
+        }
+
+    }
+
+    @Override
+    public void addLike(int userId, int filmId) {
+        if (filmList.containsKey(filmId) && userId > 0) {
+            filmService.addLike(userId, filmList.get(filmId));
+        } else {
+            throw new NotFoundException("Фильм не найдем");
+        }
+    }
+
+    @Override
+    public void deleteLike(int userId, int filmId) {
+        if (filmList.containsKey(filmId) && userId > 0) {
+            filmService.deleteLike(userId, filmList.get(filmId));
+        } else {
+            throw new NotFoundException("Фильм не найдем");
+        }
+
+    }
+
+    @Override
+    public List<Film> topFilms(int count) {
+        return filmService.topFilms(filmList, count);
     }
 }

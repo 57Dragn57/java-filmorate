@@ -12,4 +12,13 @@ public interface FilmStorage {
     public List<Film> allFilms();
 
     public void deleteFilm(int id);
+
+    public void addLike(int userId, int filmId);
+
+    public void deleteLike(int userId, int filmId);
+
+    public List<Film> topFilms(int count);
+
+    public Film getFilm(int id);
+
 }
