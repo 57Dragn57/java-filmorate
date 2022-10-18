@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 @SpringBootTest
 class FilmorateApplicationTests {
-	private UserController userController = new UserController();
+	//private UserController userController = new UserController();
 	@Test
 	void contextLoads() {
 	}

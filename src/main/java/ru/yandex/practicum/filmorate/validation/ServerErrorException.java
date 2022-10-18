@@ -5,9 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Slf4j
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-public class ValidationException extends IllegalArgumentException {
-    public ValidationException(String message) {
+@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+public class ServerErrorException extends IllegalArgumentException {
+    public ServerErrorException(String message) {
         super(message);
     }
 }
