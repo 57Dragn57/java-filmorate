@@ -21,7 +21,7 @@ public class FilmService {
     public List<Film> topFilms(HashMap<Integer, Film> filmList, int count) {
         List<Film> top;
         if (count >= filmList.size()) {
-            return top = new ArrayList<>(filmList.values());
+            return new ArrayList<>(filmList.values());
         } else {
             top = new ArrayList<>();
 

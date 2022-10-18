@@ -17,7 +17,7 @@ import java.util.List;
 @Component
 public class InMemoryUserStorage implements UserStorage {
     private int id;
-    private static final HashMap<Integer, User> userList = new HashMap<>();
+    private final HashMap<Integer, User> userList = new HashMap<>();
     private final UserService userService;
 
     @Autowired
