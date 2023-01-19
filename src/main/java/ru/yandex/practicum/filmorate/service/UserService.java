@@ -10,8 +10,13 @@ import java.util.List;
 public class UserService {
 
     public void addFriend(User firstUser, User secondUser) {
-        firstUser.getFriendList().add(secondUser.getId());
-        secondUser.getFriendList().add(firstUser.getId());
+        if (firstUser.getSubscribers().contains(secondUser)) {
+            firstUser.getSubscribers().remove(secondUser.getId());
+            firstUser.getSubscribers().add(secondUser.getId());
+        } else {
+            firstUser.getFriendList().add(secondUser.getId());
+            secondUser.getSubscribers().add(firstUser.getId());
+        }
     }
 
     public void removeFriend(User firstUser, User secondUser) {

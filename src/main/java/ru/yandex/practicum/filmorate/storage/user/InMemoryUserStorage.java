@@ -1,9 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.yandex.practicum.filmorate.controller.FilmAndUserValidator;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -42,10 +40,10 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getUser(int id){
-        if(userList.containsKey(id)) {
+    public User getUser(int id) {
+        if (userList.containsKey(id)) {
             return userList.get(id);
-        }else{
+        } else {
             throw new NotFoundException("Такого пользователя не существует");
         }
     }
@@ -73,18 +71,18 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public void addFriend(int firstUser, int secondUser) {
-        if(userList.containsKey(firstUser) && userList.containsKey(secondUser)) {
+        if (userList.containsKey(firstUser) && userList.containsKey(secondUser)) {
             userService.addFriend(userList.get(firstUser), userList.get(secondUser));
-        }else{
+        } else {
             throw new NotFoundException("Такого пользователя не существует");
         }
     }
 
     @Override
     public void removeFriend(int firstUser, int secondUser) {
-        if(userList.containsKey(firstUser) && userList.containsKey(secondUser)) {
+        if (userList.containsKey(firstUser) && userList.containsKey(secondUser)) {
             userService.removeFriend(userList.get(firstUser), userList.get(secondUser));
-        }else{
+        } else {
             throw new NotFoundException("Такого пользователя не существует");
         }
 
