@@ -3,20 +3,20 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.Data;
 
 @Data
-public class MPA {
+public class Mpa {
 
-    public MPA(String name, int id) {
+    private int id;
+    private String name;
+
+    public Mpa(String name, int id) {
         this.id = id;
         this.name = name;
     }
 
-    public MPA(int id) {
+    public Mpa(int id) {
         this.id = id;
     }
 
-    public MPA() {
+    public Mpa() {
     }
-
-    int id;
-    String name;
 }

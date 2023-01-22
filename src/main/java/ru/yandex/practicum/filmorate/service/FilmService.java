@@ -1,43 +1,43 @@
 package ru.yandex.practicum.filmorate.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Service
 public class FilmService {
 
-    public void addLike(int userId, Film film) {
-        film.getLikesList().add(userId);
+    private final FilmDbStorage filmStorage;
+
+    @Autowired
+    public FilmService(FilmDbStorage filmStorage) {
+        this.filmStorage = filmStorage;
     }
 
-    public void deleteLike(int userId, Film film) {
-        film.getLikesList().remove(userId);
+    public Film addFilm(Film film) {
+        return filmStorage.addFilm(film);
     }
 
-    public List<Film> topFilms(HashMap<Integer, Film> filmList, int count) {
-        List<Film> top;
-        if (count >= filmList.size()) {
-            return new ArrayList<>(filmList.values());
-        } else {
-            top = new ArrayList<>();
+    public Film updateFilm(Film film) {
+        return filmStorage.updateFilm(film);
+    }
 
-            for (Film film : filmList.values()) {
-                if (top.size() < count) {
-                    top.add(film);
-                } else {
-                    for (Film f : top) {
-                        if (f.getLikesList().size() < film.getLikesList().size()) {
-                            top.remove(f);
-                            top.add(film);
-                        }
-                    }
-                }
-            }
-        }
-        return top;
+    public List<Film> findAllFilms() {
+        return filmStorage.findAllFilms();
+    }
+
+    public void deleteFilm(int id) {
+        filmStorage.deleteFilm(id);
+    }
+
+    public List<Film> topFilms(int count) {
+        return filmStorage.topFilms(count);
+    }
+
+    public Film getFilm(int id) {
+        return filmStorage.getFilm(id);
     }
 }

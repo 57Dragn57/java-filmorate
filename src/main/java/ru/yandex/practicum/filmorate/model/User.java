@@ -2,18 +2,26 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 @Data
 public class User {
-    private HashSet<Integer> friendList = new HashSet<>();
-    private HashSet<Integer> subscribers = new HashSet<>();
+
+    private int id;
+    @Email
+    @NotEmpty
+    private String email;
+    @NotBlank
+    @Pattern(regexp = "^[a-zA-Z0-9]{3,12}$",
+            message = "Логин должен быть длиной от 3 до 12 символов без специальных знаков!")
+    private String login;
+    private String name;
+    @NotNull
+    @PastOrPresent
+    private LocalDate birthday;
 
     public User(int id, String name, String email, String login, LocalDate birthday) {
         this.id = id;
@@ -24,26 +32,6 @@ public class User {
     }
 
     public User() {
-    }
-
-    ;
-
-    private int id;
-    @Email
-    private String email;
-    @NotBlank
-    @NotNull
-    private String login;
-    private String name;
-    private LocalDate birthday;
-
-    public String getName() {
-        if (name == null || name.isBlank()) {
-            name = login;
-            return name;
-        } else {
-            return name;
-        }
     }
 
     public Map<String, Object> toMap() {

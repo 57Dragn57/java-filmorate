@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -12,64 +12,41 @@ import java.util.List;
 @RestController
 @Slf4j
 public class UserController {
-    private final UserDbStorage userDbStorage;
+    private final UserService userService;
 
     @Autowired
-    public UserController(UserDbStorage userDbStorage) {
-        this.userDbStorage = userDbStorage;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @PostMapping("/users")
     public User addUser(@Valid @RequestBody User user) {
         log.info("Добавление нового пользователя: {}", user.getName());
-        return userDbStorage.addUser(user);
+        return userService.addUser(user);
     }
 
     @PutMapping("/users")
     public User updateUser(@Valid @RequestBody User user) {
         log.info("Обновление пользователя: {}", user.getLogin());
-        return userDbStorage.updateUser(user);
+        return userService.updateUser(user);
     }
 
     @GetMapping("/users")
-    public List<User> allUsers() {
+    public List<User> findAllUsers() {
         log.info("Запрос на получение списка пользователей");
-        return userDbStorage.allUsers();
+        return userService.findAllUsers();
     }
 
     @GetMapping("/users/{id}")
     public User getUser(@PathVariable int id) {
         log.info("Запрос на получение пользователя {}", id);
-        return userDbStorage.getUser(id);
+        return userService.getUser(id);
     }
 
     @DeleteMapping("/user/{id}")
     public void deleteUser(@PathVariable int id) {
         log.info("Идет процесс удаления пользователя {}", id);
-        userDbStorage.deleteUser(id);
+        userService.deleteUser(id);
     }
 
-    @PutMapping("/users/{id}/friends/{friendId}")
-    public void addFriend(@PathVariable int id, @PathVariable int friendId) {
-        log.info("Пользователь {} добавил в друзья пользователя {}", id, friendId);
-        userDbStorage.addFriend(id, friendId);
-    }
-
-    @DeleteMapping("/users/{id}/friends/{friendId}")
-    public void removeFriend(@PathVariable int id, @PathVariable int friendId) {
-        log.info("Пользователь {} удалил {} из друзей", id, friendId);
-        userDbStorage.removeFriend(id, friendId);
-    }
-
-    @GetMapping("/users/{id}/friends")
-    public List<User> getFriends(@PathVariable int id) {
-        log.info("Процесс получения списка друзей пользователем {}", id);
-        return userDbStorage.getFriends(id);
-    }
-
-    @GetMapping("/users/{id}/friends/common/{otherId}")
-    public List<User> commonFriends(@PathVariable int id, @PathVariable int otherId) {
-        log.info("Процесс получения общих друзей {} и {}", id, otherId);
-        return userDbStorage.commonFriends(id, otherId);
-    }
 }

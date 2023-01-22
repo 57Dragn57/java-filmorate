@@ -7,44 +7,28 @@ import java.time.LocalDate;
 
 public class FilmAndUserValidator {
 
-    public static boolean validateFilm(Film film) {
-        if (!film.getName().isBlank()) {
-            if (film.getDescription().length() < 201) {
-                if (film.getReleaseDate().isAfter(LocalDate.of(1895, 12, 27))) {
-                    if (film.getDuration() > 0) {
-                        if (film.getId() <= 0) {
-                            film.setId(1);
-                        }
+    private static final LocalDate date = LocalDate.of(1895, 12, 27);
 
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
+    public static boolean validateFilm(Film film) {
+
+        if (film.getReleaseDate().isAfter(date)) {
+            if (film.getId() <= 0) {
+                film.setId(1);
             }
+            return true;
         } else {
             return false;
         }
     }
 
+
     public static boolean validateUser(User user) {
-        if (user.getEmail().contains("@") && !user.getEmail().isBlank()) {
-            if (!user.getLogin().isBlank() && !user.getLogin().contains(" ")) {
-                if (!user.getBirthday().isAfter(LocalDate.now())) {
-                    if (user.getId() <= 0) {
-                        user.setId(1);
-                    }
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
+
+        if (!user.getBirthday().isAfter(LocalDate.now())) {
+            if (user.getId() <= 0) {
+                user.setId(1);
             }
+            return true;
         } else {
             return false;
         }

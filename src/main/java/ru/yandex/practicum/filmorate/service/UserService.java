@@ -1,38 +1,45 @@
 package ru.yandex.practicum.filmorate.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class UserService {
 
-    public void addFriend(User firstUser, User secondUser) {
-        if (firstUser.getSubscribers().contains(secondUser)) {
-            firstUser.getSubscribers().remove(secondUser.getId());
-            firstUser.getSubscribers().add(secondUser.getId());
-        } else {
-            firstUser.getFriendList().add(secondUser.getId());
-            secondUser.getSubscribers().add(firstUser.getId());
-        }
+    private final UserDbStorage userStorage;
+
+    @Autowired
+    public UserService(UserDbStorage userStorage) {
+        this.userStorage = userStorage;
     }
 
-    public void removeFriend(User firstUser, User secondUser) {
-        firstUser.getFriendList().remove(secondUser.getId());
-        secondUser.getFriendList().remove(firstUser.getId());
+    public User addUser(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+        return userStorage.addUser(user);
     }
 
-    public List<Integer> commonFriends(User firstUser, User secondUser) {
-        List<Integer> common = new ArrayList<>();
-        for (Integer fId : firstUser.getFriendList()) {
-            for (Integer sId : secondUser.getFriendList()) {
-                if (fId == sId) {
-                    common.add(sId);
-                }
-            }
+    public User updateUser(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
         }
-        return common;
+        return userStorage.updateUser(user);
+    }
+
+    public List<User> findAllUsers() {
+        return userStorage.findAllUsers();
+    }
+
+    public User getUser(int id) {
+        return userStorage.getUser(id);
+    }
+
+    public void deleteUser(int id) {
+        userStorage.deleteUser(id);
     }
 }

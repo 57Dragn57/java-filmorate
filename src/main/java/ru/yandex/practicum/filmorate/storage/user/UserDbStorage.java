@@ -55,7 +55,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public List<User> allUsers() {
+    public List<User> findAllUsers() {
         String sql = "select * from USERS";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
@@ -84,69 +84,6 @@ public class UserDbStorage implements UserStorage {
     @Override
     public void deleteUser(int id) {
         jdbcTemplate.update("delete from USERS where ID = ?", id);
-    }
-
-    @Override
-    public void addFriend(int firstUser, int secondUser) {
-        SqlRowSet subRows = jdbcTemplate.queryForRowSet("select * from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", firstUser, secondUser);
-        SqlRowSet rowsFirstUser = jdbcTemplate.queryForRowSet("select * from USERS where ID = ?", firstUser);
-        SqlRowSet rowsSecondUser = jdbcTemplate.queryForRowSet("select * from USERS where ID = ?", secondUser);
-
-        if (rowsFirstUser.next() && rowsSecondUser.next()) {
-            if (subRows.next()) {
-                jdbcTemplate.update("insert into FRIENDS (user_id, friend_id) values (?, ?)", firstUser, secondUser);
-                jdbcTemplate.update("insert into FRIENDS (user_id, friend_id) values (?, ?)", secondUser, firstUser);
-                jdbcTemplate.update("delete from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", firstUser, secondUser);
-                jdbcTemplate.update("delete from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", secondUser, firstUser);
-            } else {
-                jdbcTemplate.update("insert into SUBSCRIBERS (user_id, sub_id) values (?, ?)", secondUser, firstUser);
-                jdbcTemplate.update("insert into FRIENDS (user_id, friend_id) values (?, ?)", firstUser, secondUser);
-            }
-        } else {
-            throw new NotFoundException("Такого пользователя не существует");
-        }
-    }
-
-    @Override
-    public void removeFriend(int firstUser, int secondUser) {
-        SqlRowSet friendRows = jdbcTemplate.queryForRowSet("select * from FRIENDS where USER_ID = ? and FRIEND_ID = ?", secondUser, firstUser);
-        SqlRowSet rowsFirstUser = jdbcTemplate.queryForRowSet("select * from USERS where ID = ?", firstUser);
-        SqlRowSet rowsSecondUser = jdbcTemplate.queryForRowSet("select * from USERS where ID = ?", secondUser);
-
-        if (rowsFirstUser.next() && rowsSecondUser.next()) {
-            if (friendRows.next()) {
-                jdbcTemplate.update("delete from FRIENDS where USER_ID = ? and FRIEND_ID = ?", firstUser, secondUser);
-                jdbcTemplate.update("insert into SUBSCRIBERS (user_id, sub_id) values (?, ?)", firstUser, secondUser);
-            } else {
-                jdbcTemplate.update("delete from FRIENDS where USER_ID = ? and FRIEND_ID = ?", firstUser, secondUser);
-                jdbcTemplate.update("delete from FRIENDS where USER_ID = ? and FRIEND_ID = ?", secondUser, firstUser);
-                jdbcTemplate.update("delete from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", firstUser, secondUser);
-                jdbcTemplate.update("delete from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", secondUser, firstUser);
-            }
-        } else {
-            throw new NotFoundException("Такого пользователя не существует");
-        }
-    }
-
-    @Override
-    public List<User> commonFriends(int firstUser, int secondUser) {
-        String sql = "select ID, NAME, EMAIL, LOGIN, BIRTHDAY " +
-                "from ( " +
-                "select * from FRIENDS where USER_ID = " + firstUser +
-                ") as f1 " +
-                "join ( " +
-                "select * from FRIENDS where USER_ID = " + secondUser +
-                ") as f2 on f1.FRIEND_ID = f2.FRIEND_ID " +
-                "join USERS as u on f1.FRIEND_ID = u.ID";
-
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
-    }
-
-    @Override
-    public List<User> getFriends(int id) {
-        String sql = "select * from FRIENDS as f left join USERS as u on f.FRIEND_ID = u.ID where f.USER_ID = " + id;
-
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
     }
 
     @Override

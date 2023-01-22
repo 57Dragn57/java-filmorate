@@ -12,13 +12,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@Component
-public class InMemoryFilmStorage implements FilmStorage {
+
+/* public class InMemoryFilmStorage implements FilmStorage {
     private int id;
     private final HashMap<Integer, Film> filmList = new HashMap<>();
     private final FilmService filmService;
 
-    @Autowired
+
     public InMemoryFilmStorage(FilmService filmService) {
         this.filmService = filmService;
     }
@@ -56,7 +56,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> allFilms() {
+    public List<Film> findAllFilms() {
         List<Film> films = new ArrayList<>(filmList.values());
         return films;
     }
@@ -71,7 +71,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     }
 
-    @Override
+
     public void addLike(int userId, int filmId) {
         if (filmList.containsKey(filmId) && userId > 0) {
             filmService.addLike(userId, filmList.get(filmId));
@@ -80,7 +80,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
     }
 
-    @Override
+
     public void deleteLike(int userId, int filmId) {
         if (filmList.containsKey(filmId) && userId > 0) {
             filmService.deleteLike(userId, filmList.get(filmId));
@@ -93,4 +93,4 @@ public class InMemoryFilmStorage implements FilmStorage {
     public List<Film> topFilms(int count) {
         return filmService.topFilms(filmList, count);
     }
-}
+} */

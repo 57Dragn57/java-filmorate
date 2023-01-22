@@ -12,13 +12,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@Component
-public class InMemoryUserStorage implements UserStorage {
+
+/*  public class InMemoryUserStorage implements UserStorage {
     private int id;
     private final HashMap<Integer, User> userList = new HashMap<>();
     private final UserService userService;
 
-    @Autowired
+   @Autowired
     public InMemoryUserStorage(UserService userService) {
         this.userService = userService;
     }
@@ -59,7 +59,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> allUsers() {
+    public List<User> findAllUsers() {
         List<User> users = new ArrayList<>(userList.values());
         return users;
     }
@@ -105,4 +105,4 @@ public class InMemoryUserStorage implements UserStorage {
         }
         return friends;
     }
-}
+} */
