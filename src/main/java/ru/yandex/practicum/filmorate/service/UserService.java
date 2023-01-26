@@ -4,13 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
 
 @Service
 public class UserService {
 
-    private final UserDbStorage userStorage;
+    private final UserStorage userStorage;
 
     @Autowired
     public UserService(UserDbStorage userStorage) {
@@ -18,17 +19,19 @@ public class UserService {
     }
 
     public User addUser(User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
+        nameValidate(user);
         return userStorage.addUser(user);
     }
 
     public User updateUser(User user) {
+        nameValidate(user);
+        return userStorage.updateUser(user);
+    }
+
+    private void nameValidate(User user){
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        return userStorage.updateUser(user);
     }
 
     public List<User> findAllUsers() {

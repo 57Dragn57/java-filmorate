@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.service.GenreService;
 import ru.yandex.practicum.filmorate.storage.film.Genre;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -21,7 +22,7 @@ public class GenreController {
     }
 
     @GetMapping("/genres")
-    public LinkedHashSet<Genre> getGenres() {
+    public List<Genre> getGenres() {
         log.info("Запрос на получение жанров");
         return genreService.getGenres();
     }

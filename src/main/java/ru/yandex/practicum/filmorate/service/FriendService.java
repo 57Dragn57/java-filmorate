@@ -1,27 +1,30 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.FriendDbStorage;
+import ru.yandex.practicum.filmorate.dao.FriendStorage;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FriendService {
 
-    private final FriendDbStorage friendStorage;
-
-    @Autowired
-    public FriendService(FriendDbStorage friendStorage) {
-        this.friendStorage = friendStorage;
-    }
+    private final FriendStorage friendStorage;
+    private final UserService userService;
 
     public void addFriend(int id, int friendId) {
+        userService.getUser(id);
+        userService.getUser(friendId);
         friendStorage.addFriend(id, friendId);
     }
 
     public void removeFriend(int id, int friendId) {
+        userService.getUser(id);
+        userService.getUser(friendId);
         friendStorage.removeFriend(id, friendId);
     }
 

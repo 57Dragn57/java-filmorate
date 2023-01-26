@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
-public class MpaDbStorage {
+public class MpaDbStorage implements MpaStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -20,25 +20,28 @@ public class MpaDbStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
+    public List<Mpa> getRatings() {
+        String sql = "select * from RATINGS";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeRating(rs));
+    }
+
+    @Override
+    public Mpa getRating(int id) {
+        String sql = "select * from RATINGS where RATING_ID = ?";
+        List<Mpa> mpa = jdbcTemplate.query(sql, (rs, rowNum) -> makeRating(rs), id);
+
+        if (mpa.size() > 0) {
+            return mpa.get(0);
+        } else {
+            throw new NotFoundException("Не подходящее id");
+        }
+    }
+
     private Mpa makeRating(ResultSet rs) throws SQLException {
         return new Mpa(
                 rs.getString("name"),
                 rs.getInt("rating_id")
         );
-    }
-
-    public List<Mpa> getRatings() {
-        String sql = "select * from RATINGS limit 5";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeRating(rs));
-    }
-
-    public Mpa getRating(int id) {
-        if (id < 6 && id > -1) {
-            String sql = "select * from RATINGS where RATING_ID = ?";
-            List<Mpa> mpa = jdbcTemplate.query(sql, (rs, rowNum) -> makeRating(rs), id);
-            return mpa.get(0);
-        } else {
-            throw new NotFoundException("Не подходящее id");
-        }
     }
 }

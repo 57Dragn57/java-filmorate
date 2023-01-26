@@ -21,11 +21,8 @@ create table if not exists films (
 create table if not exists films_genres (
     genre_id int references genres,
     film_id int references films,
-    unique (genre_id, film_id)
+    primary key (genre_id, film_id)
 );
-
-create unique index if not exists film_id_uindex
-    on films (id);
 
 create table if not exists subscribers (
     user_id int,
@@ -34,7 +31,8 @@ create table if not exists subscribers (
 
 create table if not exists friends (
     user_id int,
-    friend_id int
+    friend_id int,
+    PRIMARY KEY (user_id, friend_id)
 );
 
 create table if not exists users (
@@ -49,10 +47,8 @@ create unique index if not exists USER_EMAIL_UINDEX on USERS (email);
 
 create unique index if not exists USER_LOGIN_UINDEX on USERS (login);
 
-create unique index if not exists user_id_uindex
-    on users (id);
-
 create table if not exists likes (
     user_id int,
-    film_id int
+    film_id int,
+    PRIMARY KEY (user_id,film_id)
 );

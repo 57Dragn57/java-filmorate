@@ -1,15 +1,10 @@
 package ru.yandex.practicum.filmorate;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.event.annotation.BeforeTestExecution;
-import org.springframework.test.context.event.annotation.BeforeTestMethod;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -124,7 +119,7 @@ class FilmorateApplicationTests {
         genres.add(new Genre(2));
         genres.add(new Genre(3));
         film.setMpa(mpa);
-        film.setGenres(genres);
+        film.addGenres(genres);
         filmService.updateFilm(film);
         Assertions.assertEquals(film.getName(), filmService.getFilm(1).getName());
     }

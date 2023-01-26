@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
-public class FriendDbStorage {
+public class FriendDbStorage implements FriendStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -21,12 +21,10 @@ public class FriendDbStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public void addFriend(int firstUser, int secondUser) {
         SqlRowSet subRows = jdbcTemplate.queryForRowSet("select * from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", firstUser, secondUser);
-        SqlRowSet rowsFirstUser = jdbcTemplate.queryForRowSet("select * from USERS where ID = ?", firstUser);
-        SqlRowSet rowsSecondUser = jdbcTemplate.queryForRowSet("select * from USERS where ID = ?", secondUser);
 
-        if (rowsFirstUser.next() && rowsSecondUser.next()) {
             if (subRows.next()) {
                 jdbcTemplate.update("insert into FRIENDS (user_id, friend_id) values (?, ?)", firstUser, secondUser);
                 jdbcTemplate.update("insert into FRIENDS (user_id, friend_id) values (?, ?)", secondUser, firstUser);
@@ -36,17 +34,12 @@ public class FriendDbStorage {
                 jdbcTemplate.update("insert into SUBSCRIBERS (user_id, sub_id) values (?, ?)", secondUser, firstUser);
                 jdbcTemplate.update("insert into FRIENDS (user_id, friend_id) values (?, ?)", firstUser, secondUser);
             }
-        } else {
-            throw new NotFoundException("Такого пользователя не существует");
-        }
     }
 
+    @Override
     public void removeFriend(int firstUser, int secondUser) {
         SqlRowSet friendRows = jdbcTemplate.queryForRowSet("select * from FRIENDS where USER_ID = ? and FRIEND_ID = ?", secondUser, firstUser);
-        SqlRowSet rowsFirstUser = jdbcTemplate.queryForRowSet("select * from USERS where ID = ?", firstUser);
-        SqlRowSet rowsSecondUser = jdbcTemplate.queryForRowSet("select * from USERS where ID = ?", secondUser);
 
-        if (rowsFirstUser.next() && rowsSecondUser.next()) {
             if (friendRows.next()) {
                 jdbcTemplate.update("delete from FRIENDS where USER_ID = ? and FRIEND_ID = ?", firstUser, secondUser);
                 jdbcTemplate.update("insert into SUBSCRIBERS (user_id, sub_id) values (?, ?)", firstUser, secondUser);
@@ -56,11 +49,9 @@ public class FriendDbStorage {
                 jdbcTemplate.update("delete from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", firstUser, secondUser);
                 jdbcTemplate.update("delete from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", secondUser, firstUser);
             }
-        } else {
-            throw new NotFoundException("Такого пользователя не существует");
-        }
     }
 
+    @Override
     public List<User> commonFriends(int firstUser, int secondUser) {
         String sql = "select ID, NAME, EMAIL, LOGIN, BIRTHDAY " +
                 "from ( " +
@@ -74,6 +65,7 @@ public class FriendDbStorage {
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
     }
 
+    @Override
     public List<User> getFriends(int id) {
         String sql = "select * from FRIENDS as f left join USERS as u on f.FRIEND_ID = u.ID where f.USER_ID = " + id;
 

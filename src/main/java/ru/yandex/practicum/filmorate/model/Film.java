@@ -30,6 +30,14 @@ public class Film {
     @Positive
     private int duration;
 
+    public void addGenres(Genre genre){
+        genres.add(genre);
+    }
+
+    public void addGenres(LinkedHashSet<Genre> genre){
+        this.genres = genre;
+    }
+
     public Film(int id, String name, String description, int duration, LocalDate releaseDate) {
         this.id = id;
         this.name = name;

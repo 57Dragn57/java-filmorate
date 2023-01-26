@@ -8,11 +8,11 @@ import ru.yandex.practicum.filmorate.validation.NotFoundException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class GenreDbStorage {
+public class GenreDbStorage implements GenreStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -21,25 +21,28 @@ public class GenreDbStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private Genre makeGenre(ResultSet rs) throws SQLException {
-        return new Genre(
-                rs.getInt("genre_id"),
-                rs.getString("name")
-        );
-    }
-
+    @Override
     public Genre getGenre(int id) {
-        if (id < 6 && id > 0) {
-            String sql = "select * from GENRES where GENRE_ID = ?";
-            List<Genre> genres = jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs), id);
+        String sql = "select * from GENRES where GENRE_ID = ?";
+        List<Genre> genres = jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs), id);
+
+        if (genres.size() > 0) {
             return genres.get(0);
         } else {
             throw new NotFoundException("Не верно задан id");
         }
     }
 
-    public LinkedHashSet<Genre> getGenres() {
-        String sql = "select * from GENRES limit 6";
-        return new LinkedHashSet<>(jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs)));
+    @Override
+    public List<Genre> getGenres() {
+        String sql = "select * from GENRES";
+        return new ArrayList<>(jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs)));
+    }
+
+    private Genre makeGenre(ResultSet rs) throws SQLException {
+        return new Genre(
+                rs.getInt("genre_id"),
+                rs.getString("name")
+        );
     }
 }

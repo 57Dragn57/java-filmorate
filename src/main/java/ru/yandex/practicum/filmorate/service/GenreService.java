@@ -3,21 +3,23 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.GenreDbStorage;
+import ru.yandex.practicum.filmorate.dao.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.film.Genre;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 
 @Service
 public class GenreService {
 
-    private final GenreDbStorage genreStorage;
+    private final GenreStorage genreStorage;
 
     @Autowired
     public GenreService(GenreDbStorage genreStorage) {
         this.genreStorage = genreStorage;
     }
 
-    public LinkedHashSet<Genre> getGenres() {
+    public List<Genre> getGenres() {
         return genreStorage.getGenres();
     }
 
