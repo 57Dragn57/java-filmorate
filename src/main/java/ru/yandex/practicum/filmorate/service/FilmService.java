@@ -14,6 +14,7 @@ import java.util.List;
 public class FilmService {
 
     private final FilmStorage filmStorage;
+    private static final LocalDate localDate = LocalDate.of(1895, 12, 28);
 
     @Autowired
     public FilmService(FilmDbStorage filmStorage) {
@@ -21,15 +22,12 @@ public class FilmService {
     }
 
     public Film addFilm(Film film) {
-        LocalDate ld = LocalDate.of(1895, 12, 28);
-        if (film.getReleaseDate().isAfter(ld)){
-            return filmStorage.addFilm(film);
-    }else {
-            throw new ServerErrorException("Передана неверная дата");
-        }
+        dateValidate(film);
+        return filmStorage.addFilm(film);
     }
 
     public Film updateFilm(Film film) {
+        dateValidate(film);
         return filmStorage.updateFilm(film);
     }
 
@@ -47,5 +45,11 @@ public class FilmService {
 
     public Film getFilm(int id) {
         return filmStorage.getFilm(id);
+    }
+
+    private void dateValidate(Film film) {
+        if (film.getReleaseDate().isBefore(localDate)) {
+            throw new ServerErrorException("Передана неверная дата");
+        }
     }
 }

@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -43,7 +44,6 @@ public class FilmDbStorage implements FilmStorage {
                 jdbcTemplate.update("delete from FILMS_GENRES where FILM_ID = ?", film.getId());
                 batchUpdater(film);
             }
-
             return film;
         } else {
             throw new NotFoundException("Фильм не найдем");
@@ -124,30 +124,6 @@ public class FilmDbStorage implements FilmStorage {
 
         film.setMpa(new Mpa(ratingName, ratingId));
 
-        return film;
-    }
-
-    /*  private List<Film> setGenresFromList(List<Film> films) {
-
-          final Map<Integer, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, film -> film));
-
-          String sql = "select g.name, fg.genre_id, fg.film_id from FILMS_GENRES as fg left join GENRES as g on fg.genre_id = g.genre_id where fg.film_id in ?";
-          List<Film> filmsGenres = jdbcTemplate.query(sql, (rs) -> {
-              Film film;
-              for(Film f : films){
-                  int id = rs.getInt("film_id");
-                  if(f.getId() == ){
-                      film = f;
-                  }
-              }
-
-          }, filmById.keySet());
-
-          return filmsGenres;
-      }  */
-//Я перешарил интернет назадавал вам кучу вопросов, но все равно так и не понял как тут можно применить этот метод
-    private Film addGenreToFilm(ResultSet rs, Film film) throws SQLException {
-        film.addGenres(new Genre(rs.getInt("genre_id"), rs.getString("name")));
         return film;
     }
 

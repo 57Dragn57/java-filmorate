@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.validation.NotFoundException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,30 +24,30 @@ public class FriendDbStorage implements FriendStorage {
     public void addFriend(int firstUser, int secondUser) {
         SqlRowSet subRows = jdbcTemplate.queryForRowSet("select * from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", firstUser, secondUser);
 
-            if (subRows.next()) {
-                jdbcTemplate.update("insert into FRIENDS (user_id, friend_id) values (?, ?)", firstUser, secondUser);
-                jdbcTemplate.update("insert into FRIENDS (user_id, friend_id) values (?, ?)", secondUser, firstUser);
-                jdbcTemplate.update("delete from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", firstUser, secondUser);
-                jdbcTemplate.update("delete from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", secondUser, firstUser);
-            } else {
-                jdbcTemplate.update("insert into SUBSCRIBERS (user_id, sub_id) values (?, ?)", secondUser, firstUser);
-                jdbcTemplate.update("insert into FRIENDS (user_id, friend_id) values (?, ?)", firstUser, secondUser);
-            }
+        if (subRows.next()) {
+            jdbcTemplate.update("insert into FRIENDS (user_id, friend_id) values (?, ?)", firstUser, secondUser);
+            jdbcTemplate.update("insert into FRIENDS (user_id, friend_id) values (?, ?)", secondUser, firstUser);
+            jdbcTemplate.update("delete from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", firstUser, secondUser);
+            jdbcTemplate.update("delete from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", secondUser, firstUser);
+        } else {
+            jdbcTemplate.update("insert into SUBSCRIBERS (user_id, sub_id) values (?, ?)", secondUser, firstUser);
+            jdbcTemplate.update("insert into FRIENDS (user_id, friend_id) values (?, ?)", firstUser, secondUser);
+        }
     }
 
     @Override
     public void removeFriend(int firstUser, int secondUser) {
         SqlRowSet friendRows = jdbcTemplate.queryForRowSet("select * from FRIENDS where USER_ID = ? and FRIEND_ID = ?", secondUser, firstUser);
 
-            if (friendRows.next()) {
-                jdbcTemplate.update("delete from FRIENDS where USER_ID = ? and FRIEND_ID = ?", firstUser, secondUser);
-                jdbcTemplate.update("insert into SUBSCRIBERS (user_id, sub_id) values (?, ?)", firstUser, secondUser);
-            } else {
-                jdbcTemplate.update("delete from FRIENDS where USER_ID = ? and FRIEND_ID = ?", firstUser, secondUser);
-                jdbcTemplate.update("delete from FRIENDS where USER_ID = ? and FRIEND_ID = ?", secondUser, firstUser);
-                jdbcTemplate.update("delete from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", firstUser, secondUser);
-                jdbcTemplate.update("delete from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", secondUser, firstUser);
-            }
+        if (friendRows.next()) {
+            jdbcTemplate.update("delete from FRIENDS where USER_ID = ? and FRIEND_ID = ?", firstUser, secondUser);
+            jdbcTemplate.update("insert into SUBSCRIBERS (user_id, sub_id) values (?, ?)", firstUser, secondUser);
+        } else {
+            jdbcTemplate.update("delete from FRIENDS where USER_ID = ? and FRIEND_ID = ?", firstUser, secondUser);
+            jdbcTemplate.update("delete from FRIENDS where USER_ID = ? and FRIEND_ID = ?", secondUser, firstUser);
+            jdbcTemplate.update("delete from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", firstUser, secondUser);
+            jdbcTemplate.update("delete from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", secondUser, firstUser);
+        }
     }
 
     @Override
