@@ -16,7 +16,7 @@ import java.util.Map;
 @Data
 public class Film {
 
-    private LinkedHashSet<Genre> genres;
+    private LinkedHashSet<Genre> genres = new LinkedHashSet<>();
     @NotNull
     private Mpa mpa;
     private int id;

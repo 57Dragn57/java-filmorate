@@ -19,9 +19,6 @@ public class Genre {
         this.id = id;
     }
 
-    public Genre() {
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

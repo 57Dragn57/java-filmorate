@@ -42,12 +42,6 @@ create unique index if not exists USER_EMAIL_UINDEX on USERS (email);
 
 create unique index if not exists USER_LOGIN_UINDEX on USERS (login);
 
-create table if not exists subscribers
-(
-    user_id int references USERS,
-    sub_id  int references USERS
-);
-
 create table if not exists friends
 (
     user_id   int references USERS,

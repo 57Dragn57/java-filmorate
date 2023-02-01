@@ -1,9 +1,8 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.validation.ServerErrorException;
 
@@ -11,15 +10,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FilmService {
 
     private final FilmStorage filmStorage;
+    private final GenreService genreService;
     private static final LocalDate localDate = LocalDate.of(1895, 12, 28);
-
-    @Autowired
-    public FilmService(FilmDbStorage filmStorage) {
-        this.filmStorage = filmStorage;
-    }
 
     public Film addFilm(Film film) {
         dateValidate(film);
@@ -32,7 +28,9 @@ public class FilmService {
     }
 
     public List<Film> findAllFilms() {
-        return filmStorage.findAllFilms();
+        List<Film> films = filmStorage.findAllFilms();
+        genreService.load(films);
+        return films;
     }
 
     public void deleteFilm(int id) {
@@ -40,11 +38,15 @@ public class FilmService {
     }
 
     public List<Film> topFilms(int count) {
-        return filmStorage.topFilms(count);
+        List<Film> films = filmStorage.topFilms(count);
+        genreService.load(films);
+        return films;
     }
 
     public Film getFilm(int id) {
-        return filmStorage.getFilm(id);
+        Film film = filmStorage.getFilm(id);
+        genreService.load(List.of(film));
+        return film;
     }
 
     private void dateValidate(Film film) {

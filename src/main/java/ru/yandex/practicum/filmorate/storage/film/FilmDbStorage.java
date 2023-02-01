@@ -13,8 +13,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 @Component
@@ -92,13 +90,6 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
-    private Genre makeGenres(ResultSet rs) throws SQLException {
-        return new Genre(
-                rs.getInt("genre_id"),
-                rs.getString("name")
-        );
-    }
-
     private long simpleSave(Film film) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("films")
@@ -114,10 +105,6 @@ public class FilmDbStorage implements FilmStorage {
                 rss.getInt("duration"),
                 rss.getDate("releace_date").toLocalDate()
         );
-
-        String sql = "select g.name, fg.genre_id from FILMS_GENRES as fg left join GENRES as g on fg.genre_id = g.genre_id where fg.film_id = ?";
-        LinkedHashSet<Genre> genres = new LinkedHashSet<>(jdbcTemplate.query(sql, (rs, rowNum) -> makeGenres(rs), film.getId()));
-        film.addGenres(genres);
 
         int ratingId = rss.getInt("rating_id");
         String ratingName = rss.getString("rat_name");

@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -21,47 +20,22 @@ public class FriendDbStorage implements FriendStorage {
     }
 
     @Override
-    public void addFriend(int firstUser, int secondUser) {
-        SqlRowSet subRows = jdbcTemplate.queryForRowSet("select * from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", firstUser, secondUser);
-
-        if (subRows.next()) {
-            jdbcTemplate.update("insert into FRIENDS (user_id, friend_id) values (?, ?)", firstUser, secondUser);
-            jdbcTemplate.update("insert into FRIENDS (user_id, friend_id) values (?, ?)", secondUser, firstUser);
-            jdbcTemplate.update("delete from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", firstUser, secondUser);
-            jdbcTemplate.update("delete from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", secondUser, firstUser);
-        } else {
-            jdbcTemplate.update("insert into SUBSCRIBERS (user_id, sub_id) values (?, ?)", secondUser, firstUser);
-            jdbcTemplate.update("insert into FRIENDS (user_id, friend_id) values (?, ?)", firstUser, secondUser);
-        }
+    public void addFriend(int userId, int friendId) {
+        String sqlQuery = "merge into FRIENDS (USER_ID, FRIEND_ID) values (?, ?)";
+        jdbcTemplate.update(sqlQuery, userId, friendId);
     }
 
     @Override
-    public void removeFriend(int firstUser, int secondUser) {
-        SqlRowSet friendRows = jdbcTemplate.queryForRowSet("select * from FRIENDS where USER_ID = ? and FRIEND_ID = ?", secondUser, firstUser);
-
-        if (friendRows.next()) {
-            jdbcTemplate.update("delete from FRIENDS where USER_ID = ? and FRIEND_ID = ?", firstUser, secondUser);
-            jdbcTemplate.update("insert into SUBSCRIBERS (user_id, sub_id) values (?, ?)", firstUser, secondUser);
-        } else {
-            jdbcTemplate.update("delete from FRIENDS where USER_ID = ? and FRIEND_ID = ?", firstUser, secondUser);
-            jdbcTemplate.update("delete from FRIENDS where USER_ID = ? and FRIEND_ID = ?", secondUser, firstUser);
-            jdbcTemplate.update("delete from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", firstUser, secondUser);
-            jdbcTemplate.update("delete from SUBSCRIBERS where USER_ID = ? and SUB_ID = ?", secondUser, firstUser);
-        }
+    public void removeFriend(int userId, int friendId) {
+        String sqlQuery = "delete from FRIENDS where USER_ID = ? and FRIEND_ID = ?";
+        jdbcTemplate.update(sqlQuery, userId, friendId);
     }
 
     @Override
     public List<User> commonFriends(int firstUser, int secondUser) {
-        String sql = "select ID, NAME, EMAIL, LOGIN, BIRTHDAY " +
-                "from ( " +
-                "select * from FRIENDS where USER_ID = " + firstUser +
-                ") as f1 " +
-                "join ( " +
-                "select * from FRIENDS where USER_ID = " + secondUser +
-                ") as f2 on f1.FRIEND_ID = f2.FRIEND_ID " +
-                "join USERS as u on f1.FRIEND_ID = u.ID";
+        String sql = "select * from USERS u, FRIENDS f, FRIENDS o where u.ID = f.FRIEND_ID AND u.ID = o.FRIEND_ID AND f.USER_ID = ? AND o.USER_ID = ?";
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs), firstUser, secondUser);
     }
 
     @Override

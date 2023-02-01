@@ -17,6 +17,4 @@ public class Mpa {
         this.id = id;
     }
 
-    public Mpa() {
-    }
 }
