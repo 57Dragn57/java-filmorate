@@ -9,13 +9,9 @@ public interface FilmStorage {
 
     Film updateFilm(Film film);
 
-    List<Film> allFilms();
+    List<Film> findAllFilms();
 
     void deleteFilm(int id);
-
-    void addLike(int userId, int filmId);
-
-    void deleteLike(int userId, int filmId);
 
     List<Film> topFilms(int count);
 

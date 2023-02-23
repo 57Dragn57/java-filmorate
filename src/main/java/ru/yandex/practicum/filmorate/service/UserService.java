@@ -1,33 +1,48 @@
 package ru.yandex.practicum.filmorate.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class UserService {
 
-    public void addFriend(User firstUser, User secondUser) {
-        firstUser.getFriendList().add(secondUser.getId());
-        secondUser.getFriendList().add(firstUser.getId());
+    private final UserStorage userStorage;
+
+    @Autowired
+    public UserService(UserDbStorage userStorage) {
+        this.userStorage = userStorage;
     }
 
-    public void removeFriend(User firstUser, User secondUser) {
-        firstUser.getFriendList().remove(secondUser.getId());
-        secondUser.getFriendList().remove(firstUser.getId());
+    public User addUser(User user) {
+        nameValidate(user);
+        return userStorage.addUser(user);
     }
 
-    public List<Integer> commonFriends(User firstUser, User secondUser) {
-        List<Integer> common = new ArrayList<>();
-        for (Integer fId : firstUser.getFriendList()) {
-            for (Integer sId : secondUser.getFriendList()) {
-                if (fId == sId) {
-                    common.add(sId);
-                }
-            }
+    public User updateUser(User user) {
+        nameValidate(user);
+        return userStorage.updateUser(user);
+    }
+
+    private void nameValidate(User user){
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
         }
-        return common;
+    }
+
+    public List<User> findAllUsers() {
+        return userStorage.findAllUsers();
+    }
+
+    public User getUser(int id) {
+        return userStorage.getUser(id);
+    }
+
+    public void deleteUser(int id) {
+        userStorage.deleteUser(id);
     }
 }
